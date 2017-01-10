@@ -101,14 +101,14 @@ int main(void)
 }
 /*
 				"&"
-	 	|memory address |	type	|	name	| 	value	|
-		| 				|			|			|			|
-		| 	0x000010	|	int		|	my_name	|	42		|
-		| 				|			|			|			|
-		| 	0x000020	|	int*	|	my_ptr	|  0x000010	|
-		| 				|			|			|			|
-		| 	0x000080	|	int		| *norm_ptr |  0x000010	|
-		| 				|			|			|			|
+	 	|	memory address 	|	type	|	name		|	value		|
+		| 			|		|			|			|
+		| 	0x000010	|	int	|	my_name		|	42		|
+		| 			|		|			|			|
+		| 	0x000020	|	int*	|	my_ptr		|	0x000010	|
+		| 			|		|			|			|
+		| 	0x000080	|	int	|	*norm_ptr	|	0x000010	|
+		| 			|		|			|			|
 The final line just shows how we have been keeping the "norm"
 "norm_ptr" is still of the type (int*) 
 
