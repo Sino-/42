@@ -115,7 +115,7 @@ The final line just shows how we have been keeping the "norm"
 so 	if we were to print "&my_name", "0x000010" would print out
 	if we were to print "my_name", "42" would print out
 	if we were to print "my_ptr", "0x000010" would print out
-	if we were to print "*my_name", "42" would print out
+	if we were to print "*my_ptr", "42" would print out
 
 
 
