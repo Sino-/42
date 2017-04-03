@@ -38,13 +38,10 @@ int get_next_line(const int fd, char **line)
 	}
 	else if (leftovers[fd][split_pt] == 0 && bytes_read > 0)
 		get_next_line(fd, line);
+	if (leftovers[fd][split_pt] == 0 && split_pt > 0) 
+	{
+		*line = ft_strsub(leftovers[fd], 0, split_pt);
+		return (1);
+	}
 	return (0);
 }
-
-/*
-if (leftovers[fd][split_pt] == 0 && split_pt > 0) {
-	*line = ft_strsub(leftovers[fd], 0, split_pt);
-	return (1);
-}
-return (split_pt > 0);
-*/
