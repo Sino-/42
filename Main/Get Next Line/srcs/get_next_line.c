@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 #include "libft.h"
-
+/*
 int echolines(char *str1, char *str2, char *str3, char *str4)
 {
 	int curr;
@@ -19,11 +19,26 @@ int echolines(char *str1, char *str2, char *str3, char *str4)
 		ft_putchar(str4[curr]);
 	return (0);
 }
+
+
+int echoline(char *str)
+{
+	int curr;
+
+	curr = -1;
+	while (str[++curr])
+		ft_putchar(str[curr]);
+	return (0);
+}
+*/
 void	concat_buff_and_leftovers(const int fd, char *buffer, char **leftovers)
 {
 	char	*tmp;
 
-	tmp = ft_strjoin(leftovers[fd], buffer);
+	if (!leftovers[fd])
+		tmp = ft_strdup(buffer);
+	else
+		tmp = ft_strjoin(leftovers[fd], buffer);
 	free(leftovers[fd]);
 	leftovers[fd] = tmp;
 }
@@ -63,14 +78,17 @@ int get_next_line(const int fd, char **line)
 	}
 	if (bytes_read < 0)
 		return (-1);
+	while (leftovers[fd][split_pt] != 0)
+		split_pt++;
 	if (leftovers[fd][split_pt] == 0 && split_pt > 0)
 	{
-		*line = ft_strsub(leftovers[fd], 0, split_pt);
+		*line = ft_strsub(leftovers[fd], 0, split_pt - 1);
+		leftovers[fd][0] = 0;
 		return (1);
 	}
 	return (0);
 }
-
+/*
 int		main(int argc, char **argv)
 {
 	int		fd;
@@ -91,4 +109,5 @@ int		main(int argc, char **argv)
 	if (argc == 2)
 		close(fd);
 	return (0);
-}
+}*/
+
