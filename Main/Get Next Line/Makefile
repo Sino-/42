@@ -16,7 +16,7 @@ CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror -fsanitize=address
 INCS	=	-I./includes/
 SRCDIR	=	./srcs/
-LIST	=	get_next_line ft_strdup ft_strjoin ft_strlen ft_strnew ft_strsub
+LIST	=	get_next_line ft_strdup ft_strjoin ft_strlen ft_strnew ft_strsub ft_itoa ft_putchar ft_numofbits
 SRCS	=	$(addsuffix .c,$(addprefix $(SRCDIR), $(LIST)))
 OBJS	=	$(addsuffix .o,$(LIST))
 
