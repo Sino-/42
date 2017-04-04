@@ -30,4 +30,8 @@ char				*ft_strjoin(char const *s1, char const *s2);
 size_t				ft_strlen(char const *str);
 char				*ft_strnew(size_t size);
 char				*ft_strsub(char const *s, unsigned int start, size_t len);
+size_t				ft_numofbits(intmax_t val);
+void	ft_putchar(char c);
+char		*ft_itoa(int n);
+
 #	endif
