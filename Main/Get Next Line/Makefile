@@ -13,10 +13,10 @@
 NAME	=	get_next_line
 OUTFILE	=	-o get_next_line
 CC		=	gcc
-CFLAGS	=	-Wall -Wextra -Werror -fsanitize=address
+CFLAGS	=	-Wall -Wextra -Werror
 INCS	=	-I./includes/
 SRCDIR	=	./srcs/
-LIST	=	get_next_line ft_strdup ft_strjoin ft_strlen ft_strnew ft_strsub ft_itoa ft_putchar ft_numofbits
+LIST	=	get_next_line ft_strdup ft_strjoin ft_strlen ft_strnew ft_strsub 
 SRCS	=	$(addsuffix .c,$(addprefix $(SRCDIR), $(LIST)))
 OBJS	=	$(addsuffix .o,$(LIST))
 
