@@ -2,7 +2,7 @@
 #include "libft.h"
 
 
-void	concatenate_leftovers(const int fd, char **line, char **leftovers)
+void	concat_buff_and_leftovers(const int fd, char *buffer, char **leftovers)
 {
 	char	*tmp;
 
@@ -15,8 +15,8 @@ int		setline_resize(const int fd, char **line, char **leftovers, int splt)
 {
 	char	*tmp;
 
-	*line = ft_strsub(leftovers[fd], 0, split_pt);
-	tmp = ft_strsub(leftovers[fd], (split_pt + 1), ft_strlen(leftovers[fd]) - split_pt);
+	*line = ft_strsub(leftovers[fd], 0, splt);
+	tmp = ft_strsub(leftovers[fd], (splt + 1), ft_strlen(leftovers[fd]) - splt);
 	free(leftovers[fd]);
 	leftovers[fd] = tmp;
 	return (1);
@@ -36,7 +36,7 @@ int get_next_line(const int fd, char **line)
 	{
 		buffer[bytes_read] = '\0';
 		if (leftovers[fd])
-			concatenate_leftovers(fd, line, leftovers);	
+			concat_buff_and_leftovers(fd, buffer, leftovers);	
 		else
 			leftovers[fd] = ft_strdup(buffer);
 		while (leftovers[fd][split_pt] != 0 && leftovers[fd][split_pt] != 10)
