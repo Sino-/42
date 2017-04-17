@@ -5,10 +5,7 @@ void    concat_buff_and_leftovers(const int fd, char *buffer, char **leftovers)
 {
     char    *tmp;
     
-    if (!leftovers[fd])
-        tmp = ft_strdup(buffer);
-    else
-        tmp = ft_strjoin(leftovers[fd], buffer);
+    tmp = ft_strjoin(leftovers[fd], buffer);
     free(leftovers[fd]);
     leftovers[fd] = tmp;
 }
