@@ -29,18 +29,34 @@ void printPercent(const char * restrict format, int *curr, int *bytes)
 	}
 }
 
+void printChar(int *curr, int *bytes, va_list ap)
+{
+	char c = va_arg(ap, int);
+	write(1, &c, 1);
+	(*bytes)++;
+	(*curr)++;
+}
+
+void printString(int *curr, int *bytes, va_list ap)
+{
+	char *str = va_arg(ap, char *);
+	while (*str)
+	{
+		write(1, str++, 1);
+		(*bytes)++;
+	}
+	(*curr)++;
+}
+
 void parseFlag(const char * restrict format, int *curr, int *bytes, va_list ap)
 {
 	(*curr)++; //eat leading % 
     if (format[(*curr)] == '%')
 		printPercent(format, curr, bytes);
     else if (format[*curr] == 'c')
-    {
-    	char c = va_arg(ap, int);
-    	write(1, &c, 1);
-    	(*bytes)++;
-    	(*curr)++;
-    }
+		printChar(curr, bytes, ap);
+	else if (format[*curr] == 's')
+		printString(curr, bytes, ap);
 }
 
 
@@ -73,7 +89,6 @@ int ft_printf(const char * restrict format, ...)
 	return (*bytes);
 }
 
-
 int main(void)
 {
 	int ret;
@@ -93,7 +108,25 @@ int main(void)
 
 	c = 'x';
 
-	ret = ft_printf("printing |%c|", c);	
+	char d;
+
+	d = 'y';
+
+	ret = ft_printf("printing |%c| |%c|", c, d);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+
+
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("String test\n");
+	ft_printf("\n");
+	char *strng = "Hello";
+
+	ret = ft_printf("printing |%s|", strng);	
 	ft_printf("\n");
 	
 	printf("ret is=|%i|\n", ret);
