@@ -6,13 +6,14 @@
 #    By: yolabi <yolabi@42.us.org>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/06 01:44:44 by yolabi            #+#    #+#              #
-#    Updated: 2017/04/06 15:22:51 by yolabi           ###   ########.fr        #
+#    Updated: 2017/07/02 23:23:34 by yolabi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	libftprintf.a
-CC		=	gcc 
-CFLAGS	=	-c -Wall -Wextra -Werror
+NAME	=	test.printf
+OUTFILE =   -o $(NAME)
+CC		=	gcc
+CFLAGS	=	-Wall -Wextra -Werror
 SRCDIR	=	srcs/
 INCS	=	-I./includes/
 LIST	=	ft_printf
@@ -24,10 +25,7 @@ OBJS	=	$(addsuffix .o,$(LIST))
 all: $(NAME)
 
 $(NAME): 
-	$(CC) $(CFLAGS) $(SRCS) $(INCS)
-	ar rc $(NAME) $(OBJS)
-	ranlib $(NAME)
-
+	$(CC) $(CFLAGS) $(SRCS) $(INCS) $(OUTFILE)
 clean:
 	/bin/rm -f $(OBJS)
 

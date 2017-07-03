@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include "ft_printf.h"
 
 /*
 **	Allowed functions:
@@ -18,24 +15,6 @@
 **	• You must manage the precision
 **	• You must manage the flags hh, h, l, ll, j, et z.
 */
-
-typedef struct		s_env
-{
-	int				curr;
-	int				bytes;
-	unsigned int	precision;
-	unsigned int	octothorpe	:1;
-	unsigned int	zero		:1;
-	unsigned int	minus		:1;
-	unsigned int	plus		:1;
-	unsigned int	space		:1;
-	unsigned int	hh			:1;
-	unsigned int	h			:1;
-	unsigned int	l			:1;
-	unsigned int	ll			:1;
-	unsigned int	j			:1;
-	unsigned int	z			:1;
-}					t_env;
 
 void	reset_env(t_env *env)
 {
