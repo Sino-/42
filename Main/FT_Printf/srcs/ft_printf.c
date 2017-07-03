@@ -19,74 +19,102 @@
 **	• You must manage the flags hh, h, l, ll, j, et z.
 */
 
-void printPercent(const char * restrict format, int *curr, int *bytes)
+typedef struct		s_env
 {
-	while (format[(*curr)] == '%')
+	int				curr;
+	int				bytes;
+	unsigned int	precision;
+	unsigned int	octothorpe	:1;
+	unsigned int	zero		:1;
+	unsigned int	minus		:1;
+	unsigned int	plus		:1;
+	unsigned int	space		:1;
+	unsigned int	hh			:1;
+	unsigned int	h			:1;
+	unsigned int	l			:1;
+	unsigned int	ll			:1;
+	unsigned int	j			:1;
+	unsigned int	z			:1;
+}					t_env;
+
+void	reset_env(t_env *env)
+{
+	env->precision	= 0;
+	env->octothorpe	= 0;
+	env->zero		= 0;
+	env->minus		= 0;
+	env->plus		= 0;
+	env->space		= 0;
+	env->hh			= 0;
+	env->h			= 0;
+	env->l			= 0;
+	env->ll			= 0;
+	env->j			= 0;
+	env->z			= 0;
+}
+
+void printPercent(t_env *env, const char * restrict format)
+{
+	while (format[(env->curr)] == '%')
     {
 		write(1, "\%", 1);
-		(*bytes)++;
-		(*curr)++;
+		(env->bytes)++;
+		(env->curr)++;
 	}
 }
 
-void printChar(int *curr, int *bytes, va_list ap)
+void printChar(t_env *env, va_list ap)
 {
 	char c = va_arg(ap, int);
 	write(1, &c, 1);
-	(*bytes)++;
-	(*curr)++;
+	(env->bytes)++;
+	(env->curr)++;
 }
 
-void printString(int *curr, int *bytes, va_list ap)
+void printString(t_env *env, va_list ap)
 {
 	char *str = va_arg(ap, char *);
 	while (*str)
 	{
 		write(1, str++, 1);
-		(*bytes)++;
+		(env->bytes)++;
 	}
-	(*curr)++;
+	(env->curr)++;
 }
 
-void parseFlag(const char * restrict format, int *curr, int *bytes, va_list ap)
+void parseFlag(t_env *env, const char * restrict format, va_list ap)
 {
-	(*curr)++; //eat leading % 
-    if (format[(*curr)] == '%')
-		printPercent(format, curr, bytes);
-    else if (format[*curr] == 'c')
-		printChar(curr, bytes, ap);
-	else if (format[*curr] == 's')
-		printString(curr, bytes, ap);
+	(env->curr)++; //eat leading % 
+    if (format[(env->curr)] == '%')
+		printPercent(env, format);
+    else if (format[(env->curr)] == 'c')
+		printChar(env, ap);
+	else if (format[(env->curr)] == 's')
+		printString(env, ap);
 }
-
 
 int ft_printf(const char * restrict format, ...)
 {
-	int *bytes;
-	int *curr;
+	t_env env;
 	va_list ap;
 	va_start(ap, format);
 
-	bytes = (int *)malloc(sizeof(int));
-	curr = (int *)malloc(sizeof(int));
-	if (!bytes || !curr)
-		printf("malloc failure\n");
-
-  	(*bytes) = 0;
-    (*curr) = 0;
-    while (format[(*curr)])
+	env.curr		= 0;
+	env.bytes		= 0;
+  	reset_env(&env);
+    while (format[(env.curr)])
     {
-        if (format[(*curr)] == '%')
-            parseFlag(format, curr, bytes, ap);
+        if (format[(env.curr)] == '%')
+            parseFlag(&env, format, ap);
         else
         {
-            write(1, &(format[(*curr)]), 1);
-        	(*bytes)++;
-        	(*curr)++;
+            write(1, &(format[(env.curr)]), 1);
+        	(env.bytes)++;
+        	(env.curr)++;
         }
         
     }
-	return (*bytes);
+	return (env.bytes);
 }
 
 int main(void)
@@ -133,31 +161,3 @@ int main(void)
 
 	return (0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
