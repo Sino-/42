@@ -16,6 +16,45 @@
 **	• You must manage the flags hh, h, l, ll, j, et z.
 */
 
+char *ft_itoa_base(int value, int base, int upperCase)
+{
+	long	currval;
+	int		neg = 0;
+	int		size = 1;
+	char	*ret;
+
+	if (value == 0)
+		return ("0");
+	if (value < 0 && base == 10)
+		neg = 1;
+	if (neg)
+		size++;
+	currval = value;
+	if (neg)
+		currval = -currval;
+	while (currval > 0)
+	{
+		size++;
+		currval /= base;
+	}
+	char *digits = (upperCase == 1) ? "0123456789ABCDEF" : "0123456789abcdef";
+	ret = (char *)malloc(sizeof(char) * size);
+	size--;
+	ret[size--] = '\0';
+	if (neg)
+		ret[0] = '-';
+	currval = value;
+	if (neg)
+		currval = -currval;
+	while (currval > 0)
+	{
+		ret[size] = digits[currval % base];
+		currval /= base;
+		size--;
+	}
+	return (ret);
+}
+
 void	reset_env(t_env *env)
 {
 	env->precision	= 0;
