@@ -4,6 +4,9 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <string.h>
+# include <wchar.h>
+# include <locale.h>
 #endif
 
 int ft_printf(const char * restrict format, ...);
