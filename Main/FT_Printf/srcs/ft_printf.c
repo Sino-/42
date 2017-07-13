@@ -55,6 +55,35 @@ char *ft_itoa_base(int value, int base, int upperCase)
 	return (ret);
 }
 
+
+char *ft_itoa_Ubase(unsigned int value, int base, int upperCase)
+{
+	unsigned long	currval;
+	int		size = 1;
+	char	*ret;
+
+	if (value == 0)
+		return ("0");
+	currval = value;
+	while (currval > 0)
+	{
+		size++;
+		currval /= base;
+	}
+	char *digits = (upperCase == 1) ? "0123456789ABCDEF" : "0123456789abcdef";
+	ret = (char *)malloc(sizeof(char) * size);
+	size--;
+	ret[size--] = '\0';
+	currval = value;
+	while (currval > 0)
+	{
+		ret[size] = digits[currval % base];
+		currval /= base;
+		size--;
+	}
+	return (ret);
+}
+
 void	reset_env(t_env *env)
 {
 	env->precision	= 0;
@@ -74,14 +103,14 @@ void	reset_env(t_env *env)
 void printPercent(t_env *env, const char * restrict format)
 {
 	while (format[(env->curr)] == '%')
-    {
+	{
 		write(1, "\%", 1);
 		(env->bytes)++;
 		(env->curr)++;
 	}
 }
 
-void printChar(t_env *env, va_list ap)
+void printc(t_env *env, va_list ap)
 {
 	char c = va_arg(ap, int);
 	write(1, &c, 1);
@@ -89,9 +118,21 @@ void printChar(t_env *env, va_list ap)
 	(env->curr)++;
 }
 
-void printString(t_env *env, va_list ap)
+void printC(t_env *env, va_list ap)
 {
-	char *str = va_arg(ap, char *);
+	wchar_t c;
+	c = va_arg(ap, long long);
+	write(1, &c, 1);
+	(env->bytes)++;
+	(env->curr)++;
+}
+
+
+void prints(t_env *env, va_list ap)
+{
+	char *str;
+
+	str = va_arg(ap, char *);
 	while (*str)
 	{
 		write(1, str++, 1);
@@ -100,15 +141,92 @@ void printString(t_env *env, va_list ap)
 	(env->curr)++;
 }
 
+void printNums(t_env *env, va_list ap, int base, int upperCase)
+{
+	int d;
+	char *str;
+
+	d = va_arg(ap, int);
+	str = ft_itoa_base(d, base, upperCase);
+	while (*str)
+	{
+		write(1, str++, 1);
+		(env->bytes)++;
+	}
+	(env->curr)++;
+}
+
+void printUNums(t_env *env, va_list ap, int base, int upperCase)
+{
+	unsigned int d;
+	char *str;
+
+	d = va_arg(ap, unsigned int);
+	str = ft_itoa_Ubase(d, base, upperCase);
+	while (*str)
+	{
+		write(1, str++, 1);
+		(env->bytes)++;
+	}
+	(env->curr)++;
+}
+
+void printp(t_env *env, va_list ap)
+{
+	unsigned int d;
+	char *str;
+	int bytes = 12;
+
+	d = va_arg(ap, unsigned int);
+	str = ft_itoa_Ubase(d, 16, 0);
+	write(1, "0x", 2);
+	(env->bytes)+=2;
+	while ((int)sizeof(str) < --bytes)
+	{
+		write(1, "f", 1);
+		(env->bytes)++;
+	}
+	while (*str)
+	{
+		write(1, str++, 1);
+		(env->bytes)++;
+	}
+	(env->curr)++;
+}
+
+
 void parseFlag(t_env *env, const char * restrict format, va_list ap)
 {
-	(env->curr)++; //eat leading % 
-    if (format[(env->curr)] == '%')
+	(env->curr)++; //eat leading % sSpdDioOuUxXcC
+	if (format[(env->curr)] == '%')
 		printPercent(env, format);
-    else if (format[(env->curr)] == 'c')
-		printChar(env, ap);
 	else if (format[(env->curr)] == 's')
-		printString(env, ap);
+		prints(env, ap);
+	// else if (format[(env->curr)] == 'S')
+	else if (format[(env->curr)] == 'p')
+		printp(env, ap);
+	else if (format[(env->curr)] == 'd' || format[(env->curr)] == 'i' )
+		printNums(env, ap, 10, 0);
+	else if (format[(env->curr)] == 'D')
+		printUNums(env, ap, 10, 0);
+// else if (format[(env->curr)] == 'i')  implemented above with 'd'
+	else if (format[(env->curr)] == 'o')
+		printNums(env, ap, 8, 0);
+	else if (format[(env->curr)] == 'O')
+		printUNums(env, ap, 8, 0);
+	else if (format[(env->curr)] == 'u')
+		printUNums(env, ap, 10, 0);
+	// else if (format[(env->curr)] == 'U')
+	else if (format[(env->curr)] == 'x')
+		printNums(env, ap, 16, 0);
+	else if (format[(env->curr)] == 'X')
+		printNums(env, ap, 16, 1);
+	else if (format[(env->curr)] == 'c')
+		printc(env, ap);
+	else if (format[(env->curr)] == 'C')
+		printC(env, ap);
+
+
 }
 
 int ft_printf(const char * restrict format, ...)
@@ -120,18 +238,28 @@ int ft_printf(const char * restrict format, ...)
 	env.curr		= 0;
 	env.bytes		= 0;
   	reset_env(&env);
-    while (format[(env.curr)])
-    {
-        if (format[(env.curr)] == '%')
-            parseFlag(&env, format, ap);
-        else
-        {
-            write(1, &(format[(env.curr)]), 1);
-        	(env.bytes)++;
-        	(env.curr)++;
-        }
-        
-    }
+	while (format[(env.curr)])
+	{
+		 if (format[(env.curr)] == '%')
+		 {
+			 if(format[(env.curr + 1)] == ' ')
+			 {
+				 while (format[(env.curr + 1)] == ' ')
+					 (env.curr)++;
+				 write(1, " ", 1);
+				 (env.bytes)++;
+
+			 }
+			 parseFlag(&env, format, ap);
+		 }
+		else
+		{
+			write(1, &(format[(env.curr)]), 1);
+			(env.bytes)++;
+			(env.curr)++;
+		}
+		
+	}
 	return (env.bytes);
 }
 
@@ -177,5 +305,159 @@ int main(void)
 	
 	printf("ret is=|%i|\n", ret);
 
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("d test\n");
+	ft_printf("\n");
+	int dtest = 1234567890;
+
+	ret = ft_printf("printing |%d|", dtest);	
+	ft_printf("\n");
+	
+	ft_printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("x test\n");
+	ft_printf("\n");
+	int xtest = 1234567890;
+
+	ret = ft_printf("printing |%x|", xtest);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+		////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("X test\n");
+	ft_printf("\n");
+	int Xtest = 1234567890;
+
+	ret = ft_printf("printing |%X|", Xtest);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("o test\n");
+	ft_printf("\n");
+	int otest = 1234567890;
+
+	ret = ft_printf("printing |%o|", otest);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("O test\n");
+	ft_printf("\n");
+	int Otest = 1234567890;
+
+	ret = ft_printf("printing |%O|", Otest);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("u test\n");
+	ft_printf("\n");
+	unsigned int utest = 1234567890;
+
+	ret = ft_printf("printing |%u|", utest);	
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("p test\n");
+	ft_printf("\n");
+	unsigned int ptest = 1234567890;
+
+	ret = ft_printf("printing |%p|", &ptest);	
+	printf("\nprintfs: |%p|\n", &ptest);
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+
+	////////////////////////
+	ft_printf("\n");
+	ft_printf("\n");
+
+
+	ft_printf("p test\n");
+	ft_printf("\n");
+	wchar_t wtest = L'Ω';
+	setlocale(LC_CTYPE, "");
+
+	ret = ft_printf("printing |%C|", wtest);	
+	printf("\nprintfs: |%C|\n", wtest);
+	ft_printf("\n");
+	
+	printf("ret is=|%i|\n", ret);
+	////////////////////////
+
+
+
+
+
+
+
+	printf("\n\n\n\nAssorted Printf experiments below\n");
+
+	int test = 100;
+	printf("\n100 with %%o =|%o|", test);
+	printf("\nusing ft_itoa_base: %s", ft_itoa_base(test, 8, 0));
+	printf("\nBelow will \"print Hello right justified in a group of 25 spaces.\"");
+	printf("\n|%25.4s|","Hello");
+	printf("\n%lu", strlen("Hello"));
+	printf("\n");
+	printf("\n");
+	printf("\n");
+	printf("\n");
+	printf("\n");
 	return (0);
 }
