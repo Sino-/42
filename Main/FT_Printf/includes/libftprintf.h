@@ -15,6 +15,8 @@ typedef struct		s_env
 {
 	int				curr;
 	int				bytes;
+	char			conversion;
+	int				width;
 	unsigned int	precision;
 	unsigned int	octothorpe	:1;
 	unsigned int	zero		:1;
