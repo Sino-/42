@@ -10,13 +10,16 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	test.printf
-OUTFILE =   -o $(NAME)
+NAME	=	libftprintf.a
 CC		=	gcc
-CFLAGS	=	-Wall -Wextra -Werror
+CFLAGS	=	-c -Wall -Wextra -Werror
 SRCDIR	=	srcs/
 INCS	=	-I./includes/
-LIST	=	ft_printf
+ LIST	=	env_utils find_width_and_precision ft_printf itoa_and_uitoa_base	\
+ 			libft_utils parse_conversion parse_flags print_d					\
+ 			print_formatted_numbers print_formatted_strings print_nums 			\
+ 			print_octal_hex_and_pointer print_percent_and_chars	set_flags_1 	\
+ 			set_flags_2
 SRCS	=	$(addsuffix .c,$(addprefix $(SRCDIR),$(LIST)))
 OBJS	=	$(addsuffix .o,$(LIST))
 
@@ -25,12 +28,14 @@ OBJS	=	$(addsuffix .o,$(LIST))
 all: $(NAME)
 
 $(NAME): 
-	$(CC) $(CFLAGS) $(SRCS) $(INCS) $(OUTFILE)
+	$(CC) $(CFLAGS) $(SRCS) $(INCS)
+	ar rc $(NAME) $(OBJS)
+	ranlib $(NAME)
+
 clean:
 	/bin/rm -f $(OBJS)
 
 fclean: clean
 	/bin/rm -f $(NAME)
-	/bin/rm -f test
 
 re: fclean all
